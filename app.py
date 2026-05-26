@@ -134,8 +134,8 @@ if not df_violin.empty:
     )
 
     fig_emotions.update_layout(
-        xaxis_title="Valence (Smutek -> Radość)",
-        yaxis_title="Energy (Spokój -> Agresja)",
+        xaxis_title="Valence<br>(Smutek -> Radość)",
+        yaxis_title="Energy<br>(Spokój -> Agresja)",
     )
 
     fig_emotions.for_each_xaxis(
