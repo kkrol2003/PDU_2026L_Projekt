@@ -1,0 +1,45 @@
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+
+# Environment files / secrets
+.env
+.env.*
+
+# Packages / build
+dist/
+build/
+*.egg-info/
+pip-wheel-metadata/
+
+# Test / typecheck caches
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Logs / DB
+*.log
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
