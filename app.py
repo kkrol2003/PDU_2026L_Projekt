@@ -61,7 +61,7 @@ st.plotly_chart(fig, use_container_width=True)
 # SEKCJA 2: POPULARNOŚĆ
 # ==========================================
 st.markdown("---")
-st.subheader("Wpływ wulgarności na popularność (Wykres Wiolinowy)")
+st.subheader("Wpływ wulgarności na popularność")
 st.success(
     "📈 **Popularność**\n\nCzy utwory zawierające wulgaryzmy są chętniej słuchane?"
 )
