@@ -146,3 +146,55 @@ if not df_violin.empty:
     )
 
     st.plotly_chart(fig_emotions, use_container_width=True)
+
+st.markdown("---")
+st.subheader("Odkrywaj pojedyńcze utwory")
+st.markdown(
+    "Najedź kursorem na dowolną kropkę, aby sprawdzić, jaki utwór reprezentuje!"
+)
+
+filtr_explicit = st.radio(
+    "Jakie utowry chcesz zobaczyć na mapie?",
+    options=[
+        "Wszystkie",
+        "Tylko wulgarne (Explicit = True)",
+        "Tylko czyste (Explicit = False)",
+    ],
+    horizontal=True,
+)
+
+
+if not df_violin.empty:
+    df_scatter = df_violin.copy()
+
+    if filtr_explicit == "Tylko wulgarne (Explicit = True)":
+        df_scatter = df_scatter[df_scatter["explicit"] == True]
+    elif filtr_explicit == "Tylko czyste (Explicit = False)":
+        df_scatter = df_scatter[df_scatter["explicit"] == False]
+
+    if not df_scatter.empty:
+        fig_scatter_songs = px.scatter(
+            df_scatter,
+            x="valence",
+            y="energy",
+            color="explicit_label",
+            hover_name="track_name",
+            hover_data=["artists", "popularity", "track_genre"],
+            title="Każda kropka to jeden utwór (Valence vs Energy)",
+            color_discrete_map={
+                "Czyste (False)": "#1DB954",
+                "Wulgarne (True)": "#E91429",
+            },
+            opacity=0.6,
+            size_max=10,
+        )
+
+        fig_scatter_songs.update_layout(
+            xaxis_title="Valence (Smutny -> Radosny)",
+            yaxis_title="Energy (Spokojny -> Agresywny)",
+            hovermode="closest",
+        )
+
+        st.plotly_chart(fig_scatter_songs, use_container_width=True)
+    else:
+        st.info("Brak utworów w wybranej kategorii dla tych gatunków.")
