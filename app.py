@@ -6,7 +6,7 @@ import seaborn as sns
 import tqdm
 import matplotlib.pyplot as plt
 import plotly.express as px
-from utils import read_files_to_df_dict, concat_df_dict
+from utils import load_and_concat_data, get_unique_artists
 
 st.set_page_config(page_title="Spotify Data App", layout="wide")
 
@@ -15,15 +15,9 @@ DATA_PATH = "spotify_data/"
 st.title("🤬 Analiza wulgaryzmów w danych Spotify")
 st.markdown("---")
 
-
-@st.cache_data
-def load_and_concat_data(path):
-    df_dict = read_files_to_df_dict(path)
-    return concat_df_dict(df_dict)
-
-
-# Ładowanie danych
 spotify_df = load_and_concat_data(DATA_PATH)
+
+artists_list = get_unique_artists(spotify_df)
 
 # ==========================================
 # SEKCJA 1: ROZKŁAD W GATUNKACH
@@ -33,8 +27,8 @@ st.info(
     "📊 **Rozkład w gatunkach**\n\nKtóre gatunki muzyczne najczęściej zawierają wulgaryzmy?"
 )
 
-odsetek_explicit = spotify_df.groupby("track_genre")["explicit"].mean() * 100
-explicit_df = odsetek_explicit.reset_index()
+percentage_explicit = spotify_df.groupby("track_genre")["explicit"].mean() * 100
+explicit_df = percentage_explicit.reset_index()
 
 explicit_df.columns = ["Gatunek", "Procent Wulgaryzmów"]
 explicit_df = explicit_df.sort_values(by="Procent Wulgaryzmów", ascending=False)
@@ -62,17 +56,28 @@ st.plotly_chart(fig, use_container_width=True)
 # ==========================================
 st.markdown("---")
 st.subheader("Wpływ wulgarności na popularność")
-st.success(
-    "📈 **Popularność**\n\nCzy utwory zawierające wulgaryzmy są chętniej słuchane?"
-)
+st.info("📈 **Popularność**\n\nCzy utwory zawierające wulgaryzmy są chętniej słuchane?")
 
-wybrane_gatunki = st.multiselect(
-    "Wybierz gatunki do porównania:",
-    options=spotify_df["track_genre"].unique(),
-    default=["hip-hop", "pop", "classical", "metal"],
-)
+with st.sidebar:
+    selected_genres = st.multiselect(
+        "Wybierz gatunki do porównania:",
+        options=spotify_df["track_genre"].unique(),
+        default=["hip-hop", "pop", "classical", "metal"],
+    )
 
-df_violin = spotify_df[spotify_df["track_genre"].isin(wybrane_gatunki)].copy()
+    selected_artists = st.multiselect(
+        "🔍 Wybierz artystę (zostaw puste, aby analizować wszystkich artystów z wybranych gatunków):",
+        options=artists_list,
+        default=[],
+    )
+
+df_violin = spotify_df[spotify_df["track_genre"].isin(selected_genres)].copy()
+
+if len(selected_artists) > 0:
+    search_pattern = "|".join(selected_artists)
+    df_violin = df_violin[
+        df_violin["artists"].str.contains(search_pattern, case=False, na=False)
+    ]
 
 df_violin["explicit_label"] = df_violin["explicit"].map(
     {True: "Wulgarne (True)", False: "Czyste (False)"}
@@ -98,7 +103,10 @@ if not df_violin.empty:
 
     st.plotly_chart(fig_violin, use_container_width=True)
 else:
-    st.warning("Wybierz co najmniej jeden gatunek, aby zobaczyć wykres.")
+    if len(selected_genres) > 0:
+        st.warning("Ci artyści nie tworzą piosenek w tych gatunkach.", icon="⚠️")
+    else:
+        st.warning("Wybierz co najmniej jeden gatunek, aby zobaczyć wykres.", icon="⚠️")
 
 
 # ==========================================
@@ -106,7 +114,7 @@ else:
 # ==========================================
 st.markdown("---")
 st.subheader("Wulgarność a Emocje: Gdzie leżą przekleństwa?")
-st.warning(
+st.info(
     "🎭 **Emocje i nastrój**\n\nCzy wulgaryzmy to domena utworów smutnych, czy agresywnych?"
 )
 st.markdown("""
