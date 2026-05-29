@@ -251,13 +251,13 @@ with tab4:
         st.markdown("### Wynik analizy:")
         if probability >= 50:
             st.error(
-                f"🚨 **{probability:.1f}% szans, że to utwór wulgarny (Explicit).** Prawdopodobnie ze względu na parametry typowe dla takich gatunków jak rap."
+                f"🚨 **{probability:.1f}% szans, że to utwór wulgarny (Explicit = True).** Prawdopodobnie ze względu na parametry typowe dla takich gatunków jak rap."
             )
         elif probability >= 30:
             st.warning(
-                f"⚠️ **{probability:.1f}% szans na wulgaryzmy.** Utwór znajduje się w strefie granicznej."
+                f"⚠️ **{probability:.1f}% szans, że to utwór wulgarny (Explicit = True).** Utwór znajduje się w strefie granicznej."
             )
         else:
             st.success(
-                f"✅ **{100 - probability:.1f}% szans, że utwór jest czysty.** Brzmieniowo przypomina bezpieczne, radiowe hity."
+                f"✅ **{100 - probability:.1f}% szans, że utwór jest czysty (Explicit = False).** Brzmieniowo przypomina bezpieczne, radiowe hity."
             )
