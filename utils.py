@@ -6,6 +6,7 @@ import tqdm
 import matplotlib.pyplot as plt
 import tqdm
 import streamlit as st
+from sklearn.ensemble import RandomForestClassifier
 
 
 def read_files_to_df_dict(data_path: str) -> dict[str, pd.DataFrame]:
@@ -31,3 +32,13 @@ def get_unique_artists(df):
         df["artists"].dropna().str.split(";").explode().str.strip().unique()
     )
     return sorted(unique_artists)
+
+
+@st.cache_resource
+def train_RFC_model(df):
+    attributes = ["speechiness", "danceability", "energy", "valence", "acousticness"]
+    X = df[attributes]
+    y = df["explicit"].astype(int)
+    model = RandomForestClassifier(n_estimators=200, random_state=42)
+    model.fit(X, y)
+    return model, attributes
