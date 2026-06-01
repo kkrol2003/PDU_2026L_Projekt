@@ -36,9 +36,21 @@ def get_unique_artists(df):
 
 @st.cache_resource
 def train_RFC_model(df):
-    attributes = ["speechiness", "danceability", "energy", "valence", "acousticness"]
+    attributes = [
+        "speechiness",
+        "danceability",
+        "energy",
+        "valence",
+        "acousticness",
+        "instrumentalness",
+        "loudness",
+        "tempo",
+        "track_genre",
+    ]
     X = df[attributes]
     y = df["explicit"].astype(int)
+    X = pd.get_dummies(X, columns=["track_genre"])
+    final_features = X.columns.tolist()
     model = RandomForestClassifier(n_estimators=200, random_state=42)
     model.fit(X, y)
-    return model, attributes
+    return model, final_features

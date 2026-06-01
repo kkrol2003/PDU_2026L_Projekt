@@ -224,9 +224,13 @@ with tab3:
 
 
 with tab4:
-    st.subheader("Kalkulator Wulgarności (Random Forest Classifier)")
+    st.subheader("🤖 Kalkulator Wulgarności (Random Forest Classifier)")
     st.info(
-        "🪄 Ustaw parametry akustyczne suwakami, a nasz model spróbuje zgadnąć, czy utwór o takim brzmieniu zawiera wulgaryzmy!"
+        "🪄 Ustaw parametry akustyczne suwakami oraz wybierz gatunek, a nasz model spróbuje zgadnąć, czy utwór o takim brzmieniu zawiera wulgaryzmy!"
+    )
+
+    u_genre = st.selectbox(
+        "Wybierz gatunek dla utworu:", options=spotify_df["track_genre"].unique()
     )
 
     col1, col2 = st.columns(2)
@@ -235,17 +239,32 @@ with tab4:
         u_speech = st.slider("🗣️ Ilość mowy (Speechiness)", 0.0, 1.0, 0.5)
         u_dance = st.slider("💃 Taneczność (Danceability)", 0.0, 1.0, 0.5)
         u_energy = st.slider("⚡ Energia (Energy)", 0.0, 1.0, 0.5)
+        u_loudness = st.slider(
+            "🔊 Głośność (Loudness w dB)", -60.0, 0.0, -10.0, step=0.5
+        )
 
     with col2:
         u_val = st.slider("😊 Radość (Valence)", 0.0, 1.0, 0.5)
         u_acous = st.slider("🎸 Akustyczność (Acousticness)", 0.0, 1.0, 0.5)
+        u_inst = st.slider("🎹 Instrumentalność (Instrumentalness)", 0.0, 1.0, 0.0)
+        u_tempo = st.slider("⏱️ Tempo (BPM)", 40.0, 250.0, 120.0, step=1.0)
 
-    if st.button(
-        "🔮 Sprawdź przewidywania sztucznej inteligencji!", use_container_width=True
-    ):
-        user_data = pd.DataFrame(
-            [[u_speech, u_dance, u_energy, u_val, u_acous]], columns=feature_list
-        )
+    if st.button("🔮 Sprawdź przewidywania sztucznej inteligencji!", width="stretch"):
+        user_data = pd.DataFrame(0.0, index=[0], columns=feature_list)
+
+        user_data.at[0, "speechiness"] = u_speech
+        user_data.at[0, "danceability"] = u_dance
+        user_data.at[0, "energy"] = u_energy
+        user_data.at[0, "valence"] = u_val
+        user_data.at[0, "acousticness"] = u_acous
+        user_data.at[0, "instrumentalness"] = u_inst
+        user_data.at[0, "loudness"] = u_loudness
+        user_data.at[0, "tempo"] = u_tempo
+
+        genre_col_name = f"track_genre_{u_genre}"
+        if genre_col_name in user_data.columns:
+            user_data.at[0, genre_col_name] = 1
+
         probability = rfc_model.predict_proba(user_data)[0][1] * 100
 
         st.markdown("### Wynik analizy:")
