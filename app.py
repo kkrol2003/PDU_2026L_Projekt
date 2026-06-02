@@ -105,7 +105,7 @@ with tab2:
             y="popularity",
             color="explicit_label",
             violinmode="group",
-            title="Rozkład popularności utworów wulgarnych vs czystych",
+            title="Rozkład popularności utworów wulgarnych vs czystych (wykres wiolinowy)",
             category_orders={"explicit_label": ["Czyste (False)", "Wulgarne (True)"]},
             color_discrete_map={
                 "Czyste (False)": "#1DB954",
@@ -118,7 +118,23 @@ with tab2:
             xaxis_title="Gatunek", yaxis_title="Popularność (0-100)"
         )
 
+        fig_box = px.box(
+            df_violin,
+            x="track_genre",
+            y="popularity",
+            color="explicit_label",
+            title="Rozkład popularności utworów wulgarnych vs czystych (wykres pudełkowy)",
+            category_orders={"explicit_label": ["Czyste (False)", "Wulgarne (True)"]},
+            color_discrete_map={
+                "Czyste (False)": "#1DB954",
+                "Wulgarne (True)": "#E91429",
+            },
+        )
+
+        fig_box.update_layout(xaxis_title="Gatunek", yaxis_title="Popularność (0-100)")
+
         st.plotly_chart(fig_violin, use_container_width=True)
+        st.plotly_chart(fig_box, use_container_width=True)
     else:
         if len(selected_genres) > 0:
             st.warning("Ci artyści nie tworzą piosenek w tych gatunkach.", icon="⚠️")
@@ -224,9 +240,9 @@ with tab3:
 
 
 with tab4:
-    st.subheader("🤖 Kalkulator Wulgarności (Random Forest Classifier)")
+    st.subheader("Kalkulator Wulgarności (Random Forest Classifier)")
     st.info(
-        "🪄 Ustaw parametry akustyczne suwakami oraz wybierz gatunek, a nasz model spróbuje zgadnąć, czy utwór o takim brzmieniu zawiera wulgaryzmy!"
+        "🪄 **Predykcja**\n\nUstaw parametry akustyczne suwakami oraz wybierz gatunek, a nasz model spróbuje zgadnąć, czy utwór o takim brzmieniu zawiera wulgaryzmy!"
     )
 
     u_genre = st.selectbox(
