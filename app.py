@@ -296,3 +296,33 @@ with tab4:
             st.success(
                 f"✅ **{100 - probability:.1f}% szans, że utwór jest czysty (Explicit = False).** Brzmieniowo przypomina bezpieczne, radiowe hity."
             )
+
+    st.markdown("---")
+    st.subheader("Waga cech: Co najmocniej wpływa na predykcję?")
+    st.info(
+        "🤔 **Jak to działa?**\n\nPoniższy wykres pokazuje globalną ważność cech w wytrenowanym modelu. Im wyższy pasek, tym częściej model używał tej cechy do podejmowania decyzji."
+    )
+
+    importances = rfc_model.feature_importances_
+
+    importance_df = pd.DataFrame(
+        {
+            "Cecha": feature_list,
+            "Wpływ": importances,
+        }
+    ).sort_values(by="Wpływ", ascending=False)
+
+    top_importance_df = importance_df.head(15)
+
+    fig_importance = px.bar(
+        top_importance_df,
+        x="Wpływ",
+        y="Cecha",
+        orientation="h",
+        title="Top 15 najważniejszych atrybutów dla modelu Random Forest",
+        color="Wpływ",
+        color_continuous_scale="Purples",
+    )
+    fig_importance.update_layout(yaxis={"categoryorder": "total ascending"})
+
+    st.plotly_chart(fig_importance, use_container_width=True)
